@@ -137,6 +137,8 @@ class Player(GameSprite):
 
     #Функция для движения
     def move(self): 
+        RectX, RectY = self.rect.topleft
+
         if (pygame.key.get_pressed()[pygame.K_d] and self.rect.x <= self.mx_con):
             self.rect.x += self.speed
             player.anim(self.player_right_1, self.player_right_2)
@@ -155,7 +157,10 @@ class Player(GameSprite):
             player_wolk_timing()
         if pygame.key.get_pressed()[pygame.K_d] == False and pygame.key.get_pressed()[pygame.K_a] == False and pygame.key.get_pressed()[pygame.K_w] == False and pygame.key.get_pressed()[pygame.K_s] == False:
             self.image = self.player_stay
-
+        for Block in blocks:
+            if self.rect.colliderect(Block.rect):
+                self.rect.topleft = RectX, RectY
+                
 blocks = []
 x = 0
 y = 0
@@ -173,7 +178,7 @@ for i in map1:
 
 #Создание врагов, и подобного
 #player(Координаты x, координаты y, ширина, высота, скорость игрока, картинка игрока, коорднаты до кудого может дойти игрок. Первые 2, это начало. Вторые 2 координаты, это кwонечные)
-player = Player(200, 350, 20, 32, 5, 0, 0, 800, 580, player_right_1, player_right_2, player_left_1, player_left_2, player_stay, player_down_1, player_down_2, player_up_1, player_up_2)
+player = Player(70, 45, 20, 32, 5, 0, 0, 800, 580, player_right_1, player_right_2, player_left_1, player_left_2, player_stay, player_down_1, player_down_2, player_up_1, player_up_2)
 
 #Цикл игры
 while game:
