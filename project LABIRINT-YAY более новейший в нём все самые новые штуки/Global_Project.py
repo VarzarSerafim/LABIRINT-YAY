@@ -173,7 +173,7 @@ for i in map1:
 
 #Создание врагов, и подобного
 #player(Координаты x, координаты y, ширина, высота, скорость игрока, картинка игрока, коорднаты до кудого может дойти игрок. Первые 2, это начало. Вторые 2 координаты, это кwонечные)
-player = Player(200, 350, 20, 32, 5, 0, 0, 450, 580, player_right_1, player_right_2, player_left_1, player_left_2, player_stay, player_down_1, player_down_2, player_up_1, player_up_2)
+player = Player(200, 350, 20, 32, 5, 0, 0, 800, 580, player_right_1, player_right_2, player_left_1, player_left_2, player_stay, player_down_1, player_down_2, player_up_1, player_up_2)
 
 #Цикл игры
 while game:
