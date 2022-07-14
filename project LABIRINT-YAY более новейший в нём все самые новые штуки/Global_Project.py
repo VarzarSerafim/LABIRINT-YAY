@@ -35,23 +35,6 @@ map1 = ['11111111111111111111',
         '10001000010010000111',
         '11111111110011111111']
 
-map2 = ['11111111111111111111',
-        '10011110000000000000',
-        '10011110011111111110',
-        '10011110011110000010',
-        '10011110010000010000',
-        '10000000010011111111',
-        '11111111111001000000',
-        '11111111111100001000',
-        '10000000001111111000',
-        '10000111000000000000',
-        '10000000111111111111',
-        '00000000000000000000',
-        '11111111111110000000',
-        '00000000000000000000',
-        '10001111111111111111',
-        '11111111111111111111']
-
 screen.fill((255, 255, 255))
 
 #Переменная работы игры
@@ -62,11 +45,30 @@ clock = pygame.time.Clock()
 #Подключаемся к папкам, где нужные файлы
 path1 = os.path.join(os.getcwd(), "sprites")
 
-path2 = os.path.join(os.getcwd(), "sounds")
+path2 = os.path.join(os.getcwd(), "Sound")
 
 #Подключаем все спрайты, и музыку
-player_walk_1 = os.path.join(path2, "player_walk_1.ogg")
+player_walk_1 = os.path.join(path2, "hodba-v-myagkoy-obuvi-po-betonu.ogg")
 player_walk_1 = pygame.mixer.Sound(player_walk_1)
+
+game_over_won = os.path.join(path2, "game-won.ogg")
+game_over_won = pygame.mixer.Sound(game_over_won)
+
+fonovaya_muzyika = os.path.join(path2, "fonovaya-muzyika-quotutopayuschiyquot-24696.ogg")
+pygame.mixer.music.load(fonovaya_muzyika)
+pygame.mixer.music.play()
+
+game_over_1 = os.path.join(path2, "opoveschenie-o-proigryishe.ogg")
+game_over_1 = pygame.mixer.Sound(game_over_1)
+
+udar_po_chemto = os.path.join(path2, "udar-po-litsu-2-24273.ogg")
+udar_po_chemto = pygame.mixer.Sound(udar_po_chemto)
+
+sohraneniya_1 = os.path.join(path2, "zvuk-sohraneniya.ogg")
+sohraneniya_1 = pygame.mixer.Sound(sohraneniya_1)
+
+otryitie_sunduka_1 = os.path.join(path2, "otkryitie-kryishki-sunduka-14895.ogg")
+otryitie_sunduka_1 = pygame.mixer.Sound(otryitie_sunduka_1)
 
 player_stay = os.path.join(path1, "player_stay.png")
 
@@ -97,6 +99,9 @@ player_up_1 = pygame.image.load(player_up_1)
 player_up_2 = os.path.join(path1, "player_up_2.png")
 player_up_2 = pygame.image.load(player_up_2)
 
+spider = os.path.join(path1, "spider.png")
+spider = pygame.image.load(spider)
+
 block_labirint = os.path.join(path1, "block_labirint.png")
 block_labirint = pygame.image.load(block_labirint)
 
@@ -121,6 +126,50 @@ class GameSprite(pygame.sprite.Sprite):
     #Отрисовка спрайтов
     def draw(self):
         screen.blit(self.image, (self.rect.x, self.rect.y))
+
+class Spider(GameSprite):
+    def __init__(self, x, y, width, height, image):
+        super().__init__(x, y, width, height, image)
+        self.rect = pygame.Rect(x, y, width, height)
+        self.image = pygame.transform.scale(image, (self.rect.w, self.rect.h))
+    
+    def sp_move(self):
+        if self.rect.y >= 0:
+            self.rect.y -= 5
+
+
+class Enemy(GameSprite):
+    def __init__(self, x, y, w, h, image_left, speed, x2):
+        image = image_left
+        super().__init__(x, y, w, h, image)
+        self.x1 = x
+        self.x2 = x2
+        self.speed = speed
+        self.image_left = self.image
+        self.image_right = pygame.transform.flip(self.image, True, False)
+        if self.x1 > self.x2:
+            self.speed *= -1
+            self.image = self.image_left
+        else:
+            self.image = self.image_right
+
+  
+
+    def move(self):       
+        if self.x2 > self.x1:
+            if self.rect.x >= self.x1 and self.rect.x <= self.x2:
+                self.rect.x += self.speed
+            else:
+                self.speed *= -1
+                self.rect.x += self.speed
+                self.image = pygame.transform.flip(self.image, True, False)
+        else:
+            if self.rect.x >= self.x2 and self.rect.x <= self.x1:
+                self.rect.x += self.speed
+            else:
+                self.speed *= -1
+                self.rect.x += self.speed
+                self.image = pygame.transform.flip(self.image, True, False)
 
 #Класс игрока
 class Player(GameSprite):
@@ -154,6 +203,8 @@ class Player(GameSprite):
 
     #Функция для движения
     def move(self): 
+        RectX, RectY = self.rect.topleft
+
         if (pygame.key.get_pressed()[pygame.K_d] and self.rect.x <= self.mx_con):
             self.rect.x += self.speed
             player.anim(self.player_right_1, self.player_right_2)
@@ -172,6 +223,20 @@ class Player(GameSprite):
             player_wolk_timing()
         if pygame.key.get_pressed()[pygame.K_d] == False and pygame.key.get_pressed()[pygame.K_a] == False and pygame.key.get_pressed()[pygame.K_w] == False and pygame.key.get_pressed()[pygame.K_s] == False:
             self.image = self.player_stay
+        for Block in blocks:
+            if self.rect.colliderect(Block.rect):
+                self.rect.topleft = RectX, RectY
+
+# spider
+#spider1 = Spider(150, 350, 50, 50, spider, 3, 600, 3)
+#spider2 = Spider(200, 100, 50, 50, spider, 3, 400, 3)
+#enemies = [spider1, spdier2]
+
+spider1 = Spider(150, 350, 50, 50, spider)
+spider2 = Spider(200, 100, 50, 50, spider)
+enemies = [spider1, spider2]
+
+
 
 blocks = []
 x = 0
@@ -190,7 +255,7 @@ for i in map1:
 
 #Создание врагов, и подобного
 #player(Координаты x, координаты y, ширина, высота, скорость игрока, картинка игрока, коорднаты до кудого может дойти игрок. Первые 2, это начало. Вторые 2 координаты, это кwонечные)
-player = Player(200, 350, 20, 32, 5, 0, 0, 450, 580, player_right_1, player_right_2, player_left_1, player_left_2, player_stay, player_down_1, player_down_2, player_up_1, player_up_2)
+player = Player(70, 45, 20, 32, 5, 0, 0, 800, 580, player_right_1, player_right_2, player_left_1, player_left_2, player_stay, player_down_1, player_down_2, player_up_1, player_up_2)
 
 #Цикл игры
 while game:
@@ -200,9 +265,11 @@ while game:
     screen.fill((255, 255, 255))
     player.draw()
     player.move()
+    spider1.draw()
+    spider2.draw()
     for block in blocks:
         block.draw()
-
+    
     
     pygame.display.update()
     clock.tick(FPS)
